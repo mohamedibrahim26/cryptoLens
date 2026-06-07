@@ -6,12 +6,6 @@ Live demo: https://mohamedibrahim26.github.io/cryptolens
 
 ---
 
-## Why I built this
-
-I wanted to build something that works with a real external API, not just fake hardcoded data. Most beginner projects feel too static. I thought a crypto tracker would push me to handle async fetching, error states, and live data updates properly. It ended up being more complex than I expected, in a good way.
-
----
-
 ## What it does
 
 **Live prices**
