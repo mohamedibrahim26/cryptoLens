@@ -2,7 +2,7 @@
 
 A live cryptocurrency tracker that pulls real data from the CoinGecko public API. You can track prices, view charts, build a portfolio, and save a watchlist. Built using plain HTML, CSS, and JavaScript. No frameworks.
 
-Live demo: https://mohamedibrahim26.github.io/cryptolens
+Live demo: https://mohamedibrahim26.github.io/cryptolens/
 
 ---
 
