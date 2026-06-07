@@ -109,8 +109,3 @@ Getting the portfolio PnL to update correctly when prices refresh was also a goo
 ## About
 
 CryptoLens is a frontend-only crypto price tracker built without any frameworks. It uses the CoinGecko public API to pull live market data and lets you track prices, build a personal portfolio, and filter coins by performance. The project was built to practise async JavaScript, API integration, and data visualisation using plain web technologies.
-
-**Live demo:** https://mohamedibrahim26.github.io/cryptolens
-
-Built by Mohamed Ibrahim
-GitHub: https://github.com/mohamedibrahim26
