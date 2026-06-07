@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CryptoLens — Live Market Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap" id="tickerWrap">
+    <div class="ticker-inner">
+      <div class="ticker-track" id="tickerTrack">
+        <span class="ticker-loading">Loading live prices…</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <div class="logo-icon">◈</div>
+        <span class="logo-text">CryptoLens</span>
+      </div>
+    </div>
+    <div class="nav-center">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input class="search-input" id="searchInput" placeholder="Search coins…" autocomplete="off" oninput="handleSearch(this.value)"/>
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="refresh-pill" id="refreshPill" onclick="refreshNow()" title="Click to refresh now">
+        <svg class="refresh-ring-svg" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="15" class="ring-bg"/>
+          <circle cx="18" cy="18" r="15" class="ring-fill" id="ringFill"/>
+        </svg>
+        <span class="refresh-sec" id="refreshSec">60s</span>
+      </div>
+      <button class="portfolio-nav-btn" id="portfolioBtn" onclick="togglePortfolio()">
+        💼 Portfolio
+        <span class="port-badge" id="portBadge" style="display:none">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MARKET STATS -->
+  <div class="market-stats-bar" id="marketStatsBar">
+    <div class="mstat"><span class="mstat-l">Market Cap</span><span class="mstat-v" id="mstatCap">--</span></div>
+    <div class="mstat-sep"></div>
+    <div class="mstat"><span class="mstat-l">24h Volume</span><span class="mstat-v" id="mstatVol">--</span></div>
+    <div class="mstat-sep"></div>
+    <div class="mstat"><span class="mstat-l">BTC Dom.</span><span class="mstat-v" id="mstatBTC">--</span></div>
+    <div class="mstat-sep"></div>
+    <div class="mstat"><span class="mstat-l">ETH Dom.</span><span class="mstat-v" id="mstatETH">--</span></div>
+    <div class="mstat-sep"></div>
+    <div class="mstat"><span class="mstat-l">Mkt Cap 24h</span><span class="mstat-v" id="mstatChg">--</span></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls-bar">
+    <div class="filter-tabs" id="filterTabs">
+      <button class="ftab active" onclick="setFilter('all',this)">All Coins</button>
+      <button class="ftab" onclick="setFilter('gainers',this)">🚀 Top Gainers</button>
+      <button class="ftab" onclick="setFilter('losers',this)">📉 Top Losers</button>
+      <button class="ftab" onclick="setFilter('watchlist',this)">⭐ Watchlist</button>
+    </div>
+    <div class="sort-row">
+      <span class="sort-lbl">Sort by</span>
+      <select class="sort-sel" onchange="handleSort(this.value)">
+        <option value="rank">Rank</option>
+        <option value="price">Price</option>
+        <option value="change24h">24h Change</option>
+        <option value="marketcap">Market Cap</option>
+        <option value="volume">Volume</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- COIN GRID -->
+  <main>
+    <div class="coin-grid" id="coinGrid"></div>
+  </main>
+
+  <!-- PORTFOLIO SIDE PANEL -->
+  <div class="side-overlay" id="sideOverlay" onclick="togglePortfolio()"></div>
+  <aside class="portfolio-panel" id="portfolioPanel">
+    <div class="portfolio-top">
+      <h2 class="portfolio-heading">My Portfolio</h2>
+      <button class="panel-x" onclick="togglePortfolio()">✕</button>
+    </div>
+    <div class="portfolio-summary" id="portfolioSummary" style="display:none"></div>
+    <div class="portfolio-holdings" id="portfolioHoldings"></div>
+    <div class="portfolio-empty" id="portfolioEmpty">
+      <div class="pempty-icon">💼</div>
+      <p>No holdings yet.</p>
+      <p class="pempty-sub">Click <strong>+</strong> on any coin to add holdings.</p>
+    </div>
+  </aside>
+
+  <!-- COIN DETAIL MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop" onclick="closeModal()"></div>
+  <div class="coin-modal" id="coinModal">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <div class="modal-coin-header" id="modalCoinHeader"></div>
+    <div class="modal-chart-tabs" id="modalChartTabs">
+      <button class="ctab active" onclick="switchDays(1,this)">1D</button>
+      <button class="ctab" onclick="switchDays(7,this)">7D</button>
+      <button class="ctab" onclick="switchDays(30,this)">1M</button>
+      <button class="ctab" onclick="switchDays(365,this)">1Y</button>
+    </div>
+    <div class="chart-container">
+      <div class="chart-loading" id="chartLoading">⏳ Loading chart…</div>
+      <canvas id="detailChart"></canvas>
+    </div>
+    <div class="modal-coin-stats" id="modalCoinStats"></div>
+    <div class="modal-add-section">
+      <div class="modal-add-label">Add to Portfolio</div>
+      <div class="modal-add-row">
+        <input type="number" class="modal-qty-input" id="modalQtyInput" placeholder="Amount you hold (e.g. 0.5)" step="any" min="0"/>
+        <button class="modal-add-btn" onclick="addFromModal()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
